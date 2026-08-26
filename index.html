@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg: #0E1420;
+  --bg-grad: radial-gradient(1200px 600px at 50% -10%, #182338 0%, #0E1420 55%);
+  --surface: #161E2E;
+  --surface-2: #1D2841;
+  --surface-3: #24304C;
+  --stroke: rgba(255,255,255,0.07);
+  --stroke-2: rgba(255,255,255,0.12);
+  --text: #EEF2F9;
+  --text-dim: #A6B0C3;
+  --text-faint: #6C7690;
+  --accent: #6FB1EE;      /* powder blue */
+  --accent-dim: #3A6C9C;
+  --amber: #F0A868;       /* argent / budget */
+  --amber-dim: #7A5A34;
+  --mint: #6FD3B0;        /* investissements / succès */
+  --coral: #E8746B;       /* alertes / dépenses */
+  --ring-track: rgba(255,255,255,0.08);
+  --radius: 18px;
+  --radius-sm: 12px;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+html,body{height:100%;}
+body{
+  margin:0;
+  background: var(--bg-grad), var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  overflow:hidden;
+  -webkit-font-smoothing: antialiased;
+}
+#app{
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100vh;
+  height: 100dvh;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  border-left: 1px solid var(--stroke);
+  border-right: 1px solid var(--stroke);
+}
+/* ---------- HEADER ---------- */
+header.top{
+  padding: calc(env(safe-area-inset-top,0px) + 18px) 20px 14px;
+  flex-shrink:0;
+}
+.top-row{display:flex; justify-content:space-between; align-items:flex-start;}
+.eyebrow{font-family:var(--font-mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-faint); margin:0 0 4px;}
+.page-title{font-family:var(--font-display); font-size:26px; font-weight:700; margin:0; letter-spacing:-0.01em;}
+.date-pill{font-family:var(--font-mono); font-size:11px; color:var(--text-dim); background:var(--surface); border:1px solid var(--stroke); padding:6px 10px; border-radius:100px; white-space:nowrap;}
+
+/* ---------- SCROLL AREA ---------- */
+main{
+  flex:1;
+  overflow-y:auto;
+  padding: 4px 20px 110px;
+  -webkit-overflow-scrolling:touch;
+}
+main::-webkit-scrollbar{display:none;}
+.view{display:none; animation: fadeIn .25s ease;}
+.view.active{display:block;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+/* ---------- CARDS ---------- */
+.card{
+  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.card-sm{padding:12px 14px; border-radius:var(--radius-sm);}
+.section-label{
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 22px 0 10px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.section-label:first-child{margin-top:6px;}
+
+/* ---------- DAY RING (signature element) ---------- */
+.ring-card{display:flex; align-items:center; gap:16px;}
+.ring-wrap{position:relative; width:76px; height:76px; flex-shrink:0;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-track{fill:none; stroke:var(--ring-track); stroke-width:7;}
+.ring-fill{fill:none; stroke:var(--accent); stroke-width:7; stroke-linecap:round; transition: stroke-dashoffset .6s ease;}
+.ring-center{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:15px; font-weight:600;}
+.ring-copy .h{font-family:var(--font-display); font-weight:700; font-size:16px; margin:0 0 2px;}
+.ring-copy .s{font-size:12.5px; color:var(--text-dim); margin:0;}
+
+/* ---------- STAT GRID (dashboard) ---------- */
+.stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:4px;}
+.stat{
+  background: var(--surface);
+  border:1px solid var(--stroke);
+  border-radius: var(--radius-sm);
+  padding:13px 14px;
+  cursor:pointer;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.stat:active{transform: scale(0.97);}
+.stat .icon{width:18px; height:18px; margin-bottom:8px; opacity:.85;}
+.stat .val{font-family:var(--font-mono); font-size:19px; font-weight:600; line-height:1;}
+.stat .lbl{font-size:12px; color:var(--text-dim); margin-top:4px;}
+.stat.accent{border-color: rgba(111,177,238,0.35);}
+.stat.amber{border-color: rgba(240,168,104,0.35);}
+.stat.mint{border-color: rgba(111,211,176,0.35);}
+.stat.coral{border-color: rgba(232,116,107,0.35);}
+
+/* ---------- LIST ROWS ---------- */
+.row{
+  display:flex; align-items:center; gap:12px;
+  padding:12px 2px;
+  border-bottom:1px solid var(--stroke);
+}
+.row:last-child{border-bottom:none;}
+.row .grip{flex:1; min-width:0;}
+.row .t{font-size:14.5px; font-weight:500; margin:0 0 2px; word-break:break-word;}
+.row .t.done{color:var(--text-faint); text-decoration:line-through;}
+.row .m{font-size:12px; color:var(--text-dim); margin:0;}
+.chk{
+  width:22px; height:22px; border-radius:7px; border:1.5px solid var(--stroke-2);
+  flex-shrink:0; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  background:transparent; transition: all .15s ease;
+}
+.chk.on{background:var(--accent); border-color:var(--accent);}
+.chk svg{width:13px; height:13px; opacity:0; transition:opacity .1s;}
+.chk.on svg{opacity:1;}
+.amt{font-family:var(--font-mono); font-size:14.5px; font-weight:600; flex-shrink:0;}
+.amt.pos{color:var(--mint);}
+.amt.neg{color:var(--coral);}
+.tag{
+  font-size:10.5px; font-family:var(--font-mono); padding:3px 7px; border-radius:6px;
+  background:var(--surface-3); color:var(--text-dim); flex-shrink:0; text-transform:uppercase; letter-spacing:.03em;
+}
+.del-x{width:26px; height:26px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--text-faint); cursor:pointer; border-radius:8px;}
+.del-x:active{background:var(--surface-3);}
+.del-x svg{width:15px; height:15px;}
+
+/* ---------- EMPTY STATE ---------- */
+.empty{
+  text-align:center; padding:30px 10px; color:var(--text-faint); font-size:13.5px;
+}
+.empty .big{font-family:var(--font-display); font-size:15px; color:var(--text-dim); margin-bottom:4px; font-weight:600;}
+
+/* ---------- ÉPICERIE ---------- */
+.grocery-row{display:flex; align-items:center; gap:12px; padding:11px 2px; border-bottom:1px solid var(--stroke);}
+.grocery-row:last-child{border-bottom:none;}
+.grocery-row .t{font-size:14.5px; font-weight:500; margin:0 0 2px;}
+.grocery-row .t.done{color:var(--text-faint); text-decoration:line-through;}
+.grocery-row .m{font-size:12px; color:var(--text-dim); margin:0;}
+
+/* ---------- VOYAGES ---------- */
+.trip-card{
+  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+  border:1px solid var(--stroke); border-radius:var(--radius); padding:16px; margin-bottom:12px; cursor:pointer;
+}
+.trip-card:active{border-color:var(--stroke-2);}
+.trip-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;}
+.trip-name{font-family:var(--font-display); font-size:17px; font-weight:700;}
+.trip-dates{font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); margin-top:3px;}
+.trip-countdown{font-family:var(--font-mono); font-size:10.5px; padding:4px 8px; border-radius:100px; background:var(--surface-3); color:var(--accent); white-space:nowrap;}
+
+/* ---------- ALLOCATION ---------- */
+.alloc-row{margin-bottom:12px;}
+.alloc-row:last-child{margin-bottom:0;}
+.alloc-top{display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px;}
+.alloc-top .nm{font-weight:600;}
+.alloc-top .pc{font-family:var(--font-mono); color:var(--text-dim);}
+
+/* ---------- ALERTES ---------- */
+.alert-row{display:flex; align-items:center; gap:10px; padding:10px 2px; border-bottom:1px solid var(--stroke);}
+.alert-row:last-child{border-bottom:none;}
+.alert-row .dot{width:7px; height:7px; border-radius:50%; background:var(--coral); flex-shrink:0;}
+.alert-row .t{font-size:13.5px;}
+
+/* ---------- BUDGET SUMMARY ---------- */
+.budget-summary-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:14px;}
+.bsum{background:var(--surface); border:1px solid var(--stroke); border-radius:12px; padding:11px 6px; text-align:center; cursor:default;}
+.bsum.tap{cursor:pointer;}
+.bsum .lbl{font-family:var(--font-mono); font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-faint); margin-bottom:5px;}
+.bsum .val{font-family:var(--font-mono); font-weight:700; font-size:14px;}
+.bsum .sub{font-family:var(--font-mono); font-size:10px; color:var(--text-faint); margin-top:2px;}
+
+/* ---------- BUDGET BAR ---------- */
+.budget-item{margin-bottom:14px;}
+.budget-item:last-child{margin-bottom:0;}
+.bi-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;}
+.bi-name{font-size:14px; font-weight:600;}
+.bi-nums{font-family:var(--font-mono); font-size:12px; color:var(--text-dim);}
+.bar-track{height:8px; border-radius:100px; background:var(--surface-3); overflow:hidden;}
+.bar-fill{height:100%; border-radius:100px; background:var(--accent); transition:width .4s ease;}
+.bar-fill.over{background:var(--coral);}
+
+/* ---------- CALENDRIER ---------- */
+.cal-nav{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
+.cal-nav .lbl{font-family:var(--font-display); font-size:16.5px; font-weight:700; text-transform:capitalize;}
+.cal-nav-btns{display:flex; gap:6px; align-items:center;}
+.cal-arrow{
+  width:32px; height:32px; border-radius:9px; background:var(--surface); border:1px solid var(--stroke-2);
+  display:flex; align-items:center; justify-content:center; color:var(--text-dim); cursor:pointer; flex-shrink:0;
+}
+.cal-arrow:active{background:var(--surface-3);}
+.cal-today-btn{
+  font-family:var(--font-mono); font-size:10.5px; padding:7px 9px; border-radius:8px;
+  background:var(--surface); border:1px solid var(--stroke-2); color:var(--accent); cursor:pointer; white-space:nowrap;
+}
+.cal-weekdays{display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:6px;}
+.cal-weekdays span{text-align:center; font-family:var(--font-mono); font-size:10px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.04em;}
+.cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:3px;}
+.cal-day{
+  aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  border-radius:10px; cursor:pointer; position:relative; font-size:13px; color:var(--text);
+  background:transparent; border:1px solid transparent; transition: background .12s ease;
+}
+.cal-day:active{background:var(--surface-3);}
+.cal-day.other-month{color:var(--text-faint); opacity:.32;}
+.cal-day.today:not(.selected){border-color:var(--accent-dim); font-weight:700; color:var(--accent);}
+.cal-day.selected{background:var(--accent); color:#0E1420; font-weight:700;}
+.cal-day .dots{display:flex; gap:2px; margin-top:3px; height:4px;}
+.cal-day .dots span{width:4px; height:4px; border-radius:50%; background:var(--amber);}
+.cal-day.selected .dots span{background:#0E1420;}
+
+/* ---------- FAB ---------- */
+.fab{
+  position:fixed; z-index:16;
+  width:54px; height:54px; border-radius:50%;
+  background: linear-gradient(145deg, var(--accent), #4A87C4);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow: 0 8px 24px rgba(111,177,238,0.35), 0 2px 8px rgba(0,0,0,0.3);
+  cursor:pointer; border:none; color:#0E1420;
+  right: calc(50% - 240px + 20px);
+  bottom: calc(env(safe-area-inset-bottom,0px) + 92px);
+  transition: transform .15s ease;
+}
+@media (max-width: 480px){ .fab{ right:20px; } }
+.fab:active{transform: scale(0.92);}
+.fab svg{width:24px; height:24px;}
+
+/* ---------- TAB BAR ---------- */
+nav.tabbar{
+  position:absolute; left:0; right:0; bottom:0;
+  display:flex; justify-content:space-around; align-items:center;
+  padding: 8px 4px calc(env(safe-area-inset-bottom,0px) + 8px);
+  background: rgba(20,26,42,0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--stroke);
+  flex-shrink:0;
+  z-index:25;
+}
+.tab-btn{
+  background:none; border:none; color:var(--text-faint);
+  width:44px; height:44px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition: color .15s ease, background .15s ease;
+  position:relative;
+  z-index:26;
+  pointer-events:auto;
+}
+.tab-btn svg{width:22px; height:22px;}
+.tab-btn.active{color: var(--accent); background: rgba(111,177,238,0.12);}
+.tab-btn .dot{position:absolute; top:6px; right:7px; width:6px; height:6px; border-radius:50%; background:var(--coral);}
+
+/* ---------- MODAL / SHEET ---------- */
+.sheet-backdrop{
+  position:absolute; inset:0; background:rgba(4,7,14,0.6);
+  z-index:30; display:none; align-items:flex-end; justify-content:center;
+}
+.sheet-backdrop.show{display:flex;}
+.sheet{
+  width:100%; max-width:480px;
+  background: var(--surface-2);
+  border-top-left-radius:24px; border-top-right-radius:24px;
+  border: 1px solid var(--stroke-2); border-bottom:none;
+  padding: 14px 20px calc(env(safe-area-inset-bottom,0px) + 20px);
+  max-height:85vh; overflow-y:auto;
+  animation: slideUp .28s cubic-bezier(.32,.72,0,1);
+}
+@keyframes slideUp{from{transform:translateY(100%);} to{transform:translateY(0);}}
+.sheet-handle{width:36px; height:4px; border-radius:100px; background:var(--stroke-2); margin:0 auto 16px;}
+.sheet h2{font-family:var(--font-display); font-size:19px; margin:0 0 16px;}
+.field{margin-bottom:14px;}
+.field label{display:block; font-size:12px; color:var(--text-dim); margin-bottom:6px; font-family:var(--font-mono); letter-spacing:.03em;}
+.field input, .field select, .field textarea{
+  width:100%; background:var(--surface); border:1px solid var(--stroke-2); color:var(--text);
+  border-radius:10px; padding:11px 12px; font-size:15px; font-family:var(--font-body);
+}
+.field textarea{resize:vertical; min-height:70px;}
+.field input:focus, .field select:focus, .field textarea:focus{outline:2px solid var(--accent); outline-offset:1px;}
+.seg{display:flex; gap:6px;}
+.seg button{
+  flex:1; padding:10px 8px; border-radius:9px; border:1px solid var(--stroke-2); background:var(--surface);
+  color:var(--text-dim); font-size:13px; cursor:pointer; font-weight:500;
+}
+.seg button.on{background:var(--accent); color:#0E1420; border-color:var(--accent); font-weight:600;}
+.sheet-actions{display:flex; gap:10px; margin-top:6px;}
+.btn{
+  flex:1; padding:13px; border-radius:12px; border:none; font-size:15px; font-weight:600;
+  cursor:pointer; font-family:var(--font-body);
+}
+.btn.primary{background:var(--accent); color:#0E1420;}
+.btn.ghost{background:var(--surface); color:var(--text-dim); border:1px solid var(--stroke-2);}
+.btn:active{opacity:0.8;}
+
+.hidden{display:none !important;}
+::selection{background:var(--accent); color:#0E1420;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header class="top">
+    <div class="top-row">
+      <div>
+        <p class="eyebrow" id="eyebrow">Tableau de bord</p>
+        <h1 class="page-title" id="pageTitle">Centre</h1>
+      </div>
+      <div class="date-pill" id="datePill">—</div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- DASHBOARD -->
+    <!-- DASHBOARD -->
+    <section class="view active" id="view-dashboard">
+      <div class="card ring-card">
+        <div class="ring-wrap">
+          <svg viewBox="0 0 76 76" width="76" height="76">
+            <circle class="ring-track" cx="38" cy="38" r="32"></circle>
+            <circle class="ring-fill" id="dayRing" cx="38" cy="38" r="32" stroke-dasharray="201" stroke-dashoffset="201"></circle>
+          </svg>
+          <div class="ring-center" id="dayRingLabel">0%</div>
+        </div>
+        <div class="ring-copy">
+          <p class="h" id="ringHeadline">Bonjour.</p>
+          <p class="s" id="ringSub">Aucune tâche pour l'instant.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat accent" data-goto="taches">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <div class="val" id="dStatTasks">0</div>
+          <div class="lbl">tâches à faire</div>
+        </div>
+        <div class="stat coral" data-goto="rappels">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <div class="val" id="dStatReminders">0</div>
+          <div class="lbl">rappels actifs</div>
+        </div>
+        <div class="stat amber" data-goto="rappels">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7Z"/></svg>
+          <div class="val" id="dStatMoney">0 $</div>
+          <div class="lbl">argent à envoyer</div>
+        </div>
+        <div class="stat mint" data-goto="investissements">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
+          <div class="val" id="dStatInvest">+0%</div>
+          <div class="lbl">portefeuille</div>
+        </div>
+      </div>
+
+      <div class="section-label">Alertes</div>
+      <div class="card card-sm" id="dashAlertsCard"></div>
+
+      <div class="section-label">Budget du mois</div>
+      <div class="card card-sm" id="dashBudgetCard"></div>
+
+      <div class="section-label">Prochain voyage</div>
+      <div class="card card-sm" id="dashTripCard"></div>
+
+      <div class="section-label">Prochains évènements</div>
+      <div class="card card-sm" id="dashEventsCard"></div>
+
+      <div class="section-label">
+        <span>Mes widgets</span>
+        <span style="color:var(--accent); cursor:pointer;" onclick="openWidgetSheet()">+ ajouter</span>
+      </div>
+      <div id="widgetsWrap"></div>
+    </section>
+
+    <!-- BUDGET -->
+    <section class="view" id="view-budget">
+      <div class="card">
+        <div class="cal-nav">
+          <div class="cal-arrow" onclick="budgetShiftMonth(-1)">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </div>
+          <div class="lbl" id="budgetMonthLabel">—</div>
+          <div class="cal-nav-btns">
+            <div class="cal-today-btn" onclick="budgetGoToday()">Ce mois-ci</div>
+            <div class="cal-arrow" onclick="budgetShiftMonth(1)">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="budget-summary-grid" id="budgetSummary"></div>
+      </div>
+
+      <div class="section-label">
+        <span>Catégories</span>
+        <span style="color:var(--accent); cursor:pointer;" onclick="openBudgetCategorySheet()">+ catégorie</span>
+      </div>
+      <div class="card" id="budgetCategories"></div>
+      <div class="section-label" id="budgetTxLabel">Transactions</div>
+      <div class="card card-sm" id="budgetTransactions"></div>
+    </section>
+
+    <!-- ÉPICERIE -->
+    <section class="view" id="view-epicerie">
+      <div class="card" style="text-align:center;">
+        <p class="eyebrow" style="margin-bottom:6px;">Épicerie ce mois-ci</p>
+        <p style="font-family:var(--font-mono); font-size:26px; font-weight:600; margin:0;" id="groceryBudgetLine">—</p>
+      </div>
+      <div class="section-label">
+        <span>Liste</span>
+        <span style="color:var(--accent); cursor:pointer;" onclick="finishGroceryRun()">Enregistrer au budget</span>
+      </div>
+      <div class="card card-sm" id="groceryList"></div>
+    </section>
+
+    <!-- CALENDRIER -->
+    <section class="view" id="view-calendrier">
+      <div class="card">
+        <div class="cal-nav">
+          <div class="cal-nav-btns">
+            <div class="cal-arrow" onclick="calShiftMonth(-1)">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </div>
+          </div>
+          <div class="lbl" id="calMonthLabel">—</div>
+          <div class="cal-nav-btns">
+            <div class="cal-today-btn" onclick="calGoToday()">Aujourd'hui</div>
+            <div class="cal-arrow" onclick="calShiftMonth(1)">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="cal-weekdays">
+          <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+
+      <div class="section-label" id="calSelectedLabel">Aujourd'hui</div>
+      <div class="card card-sm" id="calDayEvents"></div>
+    </section>
+
+    <!-- TÂCHES -->
+    <section class="view" id="view-taches">
+      <div class="section-label">À faire</div>
+      <div class="card card-sm" id="tasksPending"></div>
+      <div class="section-label">Terminées</div>
+      <div class="card card-sm" id="tasksDone"></div>
+    </section>
+
+    <!-- RAPPELS -->
+    <section class="view" id="view-rappels">
+      <div class="section-label">Rappels</div>
+      <div class="card card-sm" id="remindersList"></div>
+
+      <div class="section-label">
+        <span>Argent à envoyer</span>
+        <span style="color:var(--accent); cursor:pointer;" onclick="openMoneySheet()">+ envoi</span>
+      </div>
+      <div class="card" style="text-align:center;">
+        <p class="eyebrow" style="margin-bottom:6px;">Total à envoyer</p>
+        <p style="font-family:var(--font-mono); font-size:26px; font-weight:600; margin:0;" id="moneyTotal">0,00 $</p>
+      </div>
+      <div class="card card-sm" id="moneyPending"></div>
+      <div class="section-label" style="margin-top:14px;">Envoyé</div>
+      <div class="card card-sm" id="moneySent"></div>
+    </section>
+
+    <!-- INVESTISSEMENTS -->
+    <section class="view" id="view-investissements">
+      <div class="card" style="text-align:center;">
+        <p class="eyebrow" style="margin-bottom:6px;">Valeur du portefeuille</p>
+        <p style="font-family:var(--font-mono); font-size:30px; font-weight:600; margin:0;" id="investTotal">0,00 $</p>
+        <p style="font-family:var(--font-mono); font-size:13px; margin:4px 0 0;" id="investGain">+0,00 $ (0%)</p>
+      </div>
+
+      <div class="section-label">Par compte</div>
+      <div class="card card-sm" id="investByAccount"></div>
+
+      <div class="section-label">Allocation</div>
+      <div class="card" id="investAllocation"></div>
+
+      <div class="section-label">Positions</div>
+      <div class="card card-sm" id="investList"></div>
+    </section>
+
+    <!-- VOYAGES -->
+    <section class="view" id="view-voyages">
+      <div class="section-label">Mes voyages</div>
+      <div id="tripsWrap"></div>
+    </section>
+
+  </main>
+
+  <button class="fab" id="fabBtn" onclick="handleFab()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+
+  <nav class="tabbar">
+    <button class="tab-btn active" data-tab="dashboard" onclick="switchTab('dashboard')" aria-label="Tableau de bord">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+    </button>
+    <button class="tab-btn" data-tab="budget" onclick="switchTab('budget')" aria-label="Budget">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 12H12V3"/></svg>
+    </button>
+    <button class="tab-btn" data-tab="epicerie" onclick="switchTab('epicerie')" aria-label="Épicerie">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    </button>
+    <button class="tab-btn" data-tab="calendrier" onclick="switchTab('calendrier')" aria-label="Calendrier">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>
+    </button>
+    <button class="tab-btn" data-tab="taches" onclick="switchTab('taches')" aria-label="Tâches">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    </button>
+    <button class="tab-btn" data-tab="rappels" onclick="switchTab('rappels')" aria-label="Rappels">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </button>
+    <button class="tab-btn" data-tab="investissements" onclick="switchTab('investissements')" aria-label="Investissements">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
+    </button>
+    <button class="tab-btn" data-tab="voyages" onclick="switchTab('voyages')" aria-label="Voyages">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-3 1.5V22l4.5-1.5L16 22v-1.5L13 19v-4.5Z"/></svg>
+    </button>
+  </nav>
+
+
+  <div class="sheet-backdrop" id="sheetBackdrop" onclick="if(event.target===this) closeSheet()">
+    <div class="sheet" id="sheetContent"></div>
+  </div>
+
+</div>
+
+<script>
+/* ============ STOCKAGE LOCAL (version autonome, sans Claude) ============
+   Reproduit exactement l'API window.storage utilisée par l'app, mais en
+   sauvegardant dans le Safari de cet iPhone via localStorage. Aucune donnée
+   ne transite par Claude dans cette version. */
+window.storage = {
+  async get(key, shared){
+    const raw = localStorage.getItem('centre:'+key);
+    if(raw === null){ throw new Error('Clé introuvable: '+key); }
+    return {key, value: raw, shared: !!shared};
+  },
+  async set(key, value, shared){
+    localStorage.setItem('centre:'+key, value);
+    return {key, value, shared: !!shared};
+  },
+  async delete(key, shared){
+    localStorage.removeItem('centre:'+key);
+    return {key, deleted:true, shared: !!shared};
+  },
+  async list(prefix, shared){
+    const p = 'centre:'+(prefix||'');
+    const keys = Object.keys(localStorage).filter(k=>k.startsWith(p)).map(k=>k.slice(7));
+    return {keys, prefix, shared: !!shared};
+  }
+};
+
+/* ============ STORAGE ============ */
+const KEYS = ['tasks','reminders','money','budget','events','investments','widgets','groceries','trips'];
+let state = {
+  tasks: [], reminders: [], money: [],
+  budget: { categories: [], transactions: [] },
+  events: [], investments: [], widgets: [],
+  groceries: [], trips: []
+};
+
+async function loadAll(){
+  for (const k of KEYS){
+    try {
+      const r = await window.storage.get(k, false);
+      if (r && r.value != null) state[k] = JSON.parse(r.value);
+    } catch(e){ /* pas encore de valeur -> défaut déjà en place */ }
+  }
+  seedBudgetDefaults();
+  render();
+}
+const DEFAULT_BUDGET_CATEGORIES = [
+  'Loyer', 'Assurance locataire', 'Hydro (Électricité, chauffage)', 'Internet (Wi-Fi)',
+  'Téléphone', 'Nourriture (Épicerie)', 'Resto/Alcool/Sorties (Shows, etc.)', 'Carte Opus',
+  'Transport (Lyft)', 'Abonnements (Crave, Yt, etc.)', 'Vêtements', 'Sports (Hockey, Flag, etc.)',
+  'Vacances', 'Autres (Fêtes, meubles, urgences, etc.)', 'Épargne'
+];
+function seedBudgetDefaults(){
+  let changed = false;
+  if(!state.budget.categories || state.budget.categories.length === 0){
+    state.budget.categories = DEFAULT_BUDGET_CATEGORIES.map(name=>({id:uid(), name}));
+    changed = true;
+  }
+  if(state.budget.incomeTarget === undefined){
+    state.budget.incomeTarget = 3716.24;
+    changed = true;
+  }
+  if(changed) save('budget');
+}
+async function save(key){
+  try{
+    await window.storage.set(key, JSON.stringify(state[key]), false);
+  }catch(e){ console.error('Erreur de sauvegarde', key, e); }
+}
+const uid = () => Math.random().toString(36).slice(2,10);
+
+/* ============ HELPERS ============ */
+const fmtMoney = (n) => (Number(n)||0).toLocaleString('fr-CA',{minimumFractionDigits:2, maximumFractionDigits:2}) + ' $';
+const todayISO = () => new Date().toISOString().slice(0,10);
+function pad2(n){ return String(n).padStart(2,'0'); }
+function fmtDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('fr-CA', {day:'numeric', month:'short'});
+}
+function daysDiffLabel(iso){
+  if(!iso) return '';
+  const d = new Date(iso+'T00:00:00'), t = new Date(todayISO()+'T00:00:00');
+  const diff = Math.round((d-t)/86400000);
+  if(diff===0) return "aujourd'hui";
+  if(diff===1) return 'demain';
+  if(diff===-1) return 'hier';
+  if(diff<0) return `en retard (${Math.abs(diff)}j)`;
+  return `dans ${diff}j`;
+}
+const checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="#0E1420" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+const trashSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0-.8 12.4a2 2 0 0 1-2 1.6H7.8a2 2 0 0 1-2-1.6L5 6"/></svg>';
+function emptyState(big, sub){
+  return `<div class="empty"><div class="big">${big}</div><div>${sub}</div></div>`;
+}
+
+/* ============ TABS ============ */
+let currentTab = 'dashboard';
+const TAB_META = {
+  dashboard: {title:'Centre', eyebrow:'Tableau de bord', fab:false},
+  budget: {title:'Budget', eyebrow:'Ce mois-ci', fab:true},
+  epicerie: {title:'Épicerie', eyebrow:'Liste', fab:true},
+  calendrier: {title:'Calendrier', eyebrow:'Évènements', fab:true},
+  taches: {title:'Tâches', eyebrow:'À accomplir', fab:true},
+  rappels: {title:'Rappels', eyebrow:'Ne pas oublier', fab:true},
+  investissements: {title:'Investissements', eyebrow:'Portefeuille', fab:true},
+  voyages: {title:'Voyages', eyebrow:'Planification', fab:true},
+};
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+tab).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  const meta = TAB_META[tab];
+  document.getElementById('pageTitle').textContent = meta.title;
+  document.getElementById('eyebrow').textContent = meta.eyebrow;
+  document.getElementById('fabBtn').classList.toggle('hidden', !meta.fab);
+  document.getElementById('main').scrollTop = 0;
+}
+document.querySelectorAll('.stat[data-goto]').forEach(el=>{
+  el.addEventListener('click', ()=>switchTab(el.dataset.goto));
+});
+function handleFab(){
+  if(currentTab==='taches') openTaskSheet();
+  else if(currentTab==='rappels') openReminderSheet();
+  else if(currentTab==='budget') openTransactionSheet();
+  else if(currentTab==='epicerie') openGroceryItemSheet();
+  else if(currentTab==='calendrier') openEventSheet();
+  else if(currentTab==='investissements') openInvestSheet();
+  else if(currentTab==='voyages') openTripSheet();
+}
+
+/* ============ SHEET (modal) ============ */
+function openSheet(html){
+  document.getElementById('sheetContent').innerHTML = `<div class="sheet-handle"></div>` + html;
+  document.getElementById('sheetBackdrop').classList.add('show');
+}
+function closeSheet(){ document.getElementById('sheetBackdrop').classList.remove('show'); }
+
+/* ============ CLOCK ============ */
+function updateClock(){
+  const now = new Date();
+  document.getElementById('datePill').textContent = now.toLocaleDateString('fr-CA', {weekday:'short', day:'numeric', month:'short'});
+}
+
+/* ============ RENDER: ALL ============ */
+function render(){
+  renderTasks();
+  renderReminders();
+  renderMoney();
+  renderBudget();
+  renderGroceries();
+  renderEvents();
+  renderInvestments();
+  renderTrips();
+  renderDashboard();
+  updateClock();
+}
+
+/* ---- DASHBOARD ---- */
+function renderDashboard(){
+  const pending = state.tasks.filter(t=>!t.done);
+  const doneToday = state.tasks.filter(t=>t.done).length;
+  const totalForRing = state.tasks.length || 0;
+  const pct = totalForRing ? Math.round((doneToday/totalForRing)*100) : 0;
+  const circ = 201;
+  document.getElementById('dayRing').style.strokeDashoffset = circ - (circ*pct/100);
+  document.getElementById('dayRingLabel').textContent = pct+'%';
+  const hour = new Date().getHours();
+  const greet = hour<12?'Bonjour.':hour<18?'Bon après-midi.':'Bonsoir.';
+  document.getElementById('ringHeadline').textContent = greet;
+  document.getElementById('ringSub').textContent = pending.length
+    ? `${pending.length} tâche${pending.length>1?'s':''} en attente`
+    : 'Tout est à jour — rien en attente.';
+
+  document.getElementById('dStatTasks').textContent = pending.length;
+  document.getElementById('dStatReminders').textContent = state.reminders.filter(r=>!r.done).length;
+  const moneyTotal = state.money.filter(m=>m.status==='pending').reduce((s,m)=>s+Number(m.amount||0),0);
+  document.getElementById('dStatMoney').textContent = moneyTotal.toLocaleString('fr-CA',{maximumFractionDigits:0})+' $';
+  const { totalInvested, totalValue } = investTotals();
+  const gainPct = totalInvested ? ((totalValue-totalInvested)/totalInvested*100) : 0;
+  document.getElementById('dStatInvest').textContent = (gainPct>=0?'+':'')+gainPct.toFixed(1)+'%';
+
+  // alertes (catégories avec objectif approchant/dépassé) + argent à envoyer en retard
+  const realMonthKey = new Date().getFullYear()+'-'+pad2(new Date().getMonth()+1);
+  const alerts = [];
+  state.budget.categories.filter(c=>c.limit>0).forEach(c=>{
+    const spent = catSpentForMonth(c.id, realMonthKey);
+    const p = spent/c.limit*100;
+    if(p>=100) alerts.push(`Tu as dépassé ton objectif ${escapeHtml(c.name)} (${Math.round(p)}%)`);
+    else if(p>=85) alerts.push(`Tu approches de ta limite ${escapeHtml(c.name)} (${Math.round(p)}%)`);
+  });
+  const overdueMoney = state.money.filter(m=>m.status==='pending' && m.due && m.due<todayISO());
+  overdueMoney.forEach(m=>alerts.push(`Envoi en retard : ${escapeHtml(m.person)} (${fmtMoney(m.amount)})`));
+  const ac = document.getElementById('dashAlertsCard');
+  ac.innerHTML = alerts.length ? alerts.map(a=>`
+    <div class="alert-row"><div class="dot"></div><div class="t">${a}</div></div>`).join('')
+    : emptyState('Aucune alerte', 'Tout est sous contrôle.');
+
+  // budget mini
+  const bc = document.getElementById('dashBudgetCard');
+  if(!state.budget.categories.length){
+    bc.innerHTML = emptyState('Pas de budget configuré', "Ajoute une catégorie dans l'onglet Budget.");
+  } else {
+    const withLimit = state.budget.categories.filter(c=>c.limit>0).slice(0,3);
+    if(withLimit.length){
+      bc.innerHTML = withLimit.map(c=>{
+        const spent = catSpentForMonth(c.id, realMonthKey);
+        const p = Math.min(100, Math.round(spent/c.limit*100));
+        return `<div class="budget-item">
+          <div class="bi-top"><span class="bi-name">${escapeHtml(c.name)}</span><span class="bi-nums">${fmtMoney(spent)} / ${fmtMoney(c.limit)}</span></div>
+          <div class="bar-track"><div class="bar-fill ${p>=100?'over':''}" style="width:${p}%"></div></div>
+        </div>`;
+      }).join('');
+    } else {
+      const topCats = state.budget.categories
+        .map(c=>({name:c.name, spent:catSpentForMonth(c.id, realMonthKey)}))
+        .filter(c=>c.spent>0)
+        .sort((a,b)=>b.spent-a.spent)
+        .slice(0,4);
+      bc.innerHTML = topCats.length ? topCats.map(c=>`
+        <div class="row">
+          <div class="grip"><p class="t">${escapeHtml(c.name)}</p></div>
+          <div class="amt neg">${fmtMoney(c.spent)}</div>
+        </div>`).join('') : emptyState('Aucune dépense ce mois-ci', "Ajoute une transaction dans l'onglet Budget.");
+    }
+  }
+
+  // prochain voyage
+  const tc = document.getElementById('dashTripCard');
+  const nextTrip = [...state.trips].filter(t=>t.endDate>=todayISO()).sort((a,b)=>a.startDate.localeCompare(b.startDate))[0];
+  tc.innerHTML = nextTrip ? `
+    <div class="row" style="cursor:pointer; border:none;" onclick="switchTab('voyages')">
+      <div class="grip"><p class="t">${escapeHtml(nextTrip.emoji||'')} ${escapeHtml(nextTrip.name)}</p><p class="m">${fmtDate(nextTrip.startDate)} → ${fmtDate(nextTrip.endDate)}</p></div>
+      <span class="tag">${daysDiffLabel(nextTrip.startDate)}</span>
+    </div>` : emptyState('Aucun voyage prévu', "Ajoute-en un dans l'onglet Voyages.");
+
+  // events mini
+  const ec = document.getElementById('dashEventsCard');
+  const upcoming = [...state.events].filter(e=>e.date>=todayISO()).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3);
+  ec.innerHTML = upcoming.length ? upcoming.map(e=>`
+    <div class="row">
+      <div class="grip"><p class="t">${escapeHtml(e.title)}</p><p class="m">${fmtDate(e.date)}${e.time?' · '+e.time:''}</p></div>
+      <span class="tag">${daysDiffLabel(e.date)}</span>
+    </div>`).join('') : emptyState('Rien de prévu', "Ajoute un évènement dans l'onglet Calendrier.");
+
+  // widgets
+  const w = document.getElementById('widgetsWrap');
+  w.innerHTML = state.widgets.length ? state.widgets.map(item=>`
+    <div class="card card-sm">
+      <div class="row" style="border:none; padding:2px 0;">
+        <div class="grip"><p class="t" style="font-family:var(--font-display); font-weight:600;">${escapeHtml(item.title)}</p><p class="m" style="white-space:pre-wrap;">${escapeHtml(item.body||'')}</p></div>
+        <div class="del-x" onclick="deleteWidget('${item.id}')">${trashSvg}</div>
+      </div>
+    </div>`).join('') : emptyState('Aucun widget personnalisé', 'Ajoute une note libre, un lien ou un suivi perso.');
+}
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---- TÂCHES ---- */
+function renderTasks(){
+  const pend = state.tasks.filter(t=>!t.done).sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999'));
+  const done = state.tasks.filter(t=>t.done);
+  document.getElementById('tasksPending').innerHTML = pend.length ? pend.map(t=>`
+    <div class="row">
+      <div class="chk" onclick="toggleTask('${t.id}')">${checkSvg}</div>
+      <div class="grip"><p class="t">${escapeHtml(t.title)}</p>${t.due?`<p class="m">${daysDiffLabel(t.due)}</p>`:''}</div>
+      ${t.priority==='haute'?'<span class="tag" style="color:var(--coral); background:rgba(232,116,107,0.14);">priorité</span>':''}
+      <div class="del-x" onclick="deleteTask('${t.id}')">${trashSvg}</div>
+    </div>`).join('') : emptyState('Rien à faire', 'Appuie sur + pour ajouter une tâche.');
+  document.getElementById('tasksDone').innerHTML = done.length ? done.map(t=>`
+    <div class="row">
+      <div class="chk on" onclick="toggleTask('${t.id}')">${checkSvg}</div>
+      <div class="grip"><p class="t done">${escapeHtml(t.title)}</p></div>
+      <div class="del-x" onclick="deleteTask('${t.id}')">${trashSvg}</div>
+    </div>`).join('') : emptyState('Aucune tâche terminée', 'Elles apparaîtront ici.');
+}
+function openTaskSheet(){
+  const tripOpts = state.trips.length ? `<div class="field"><label>Voyage (optionnel)</label><select id="tkTrip"><option value="">Aucun</option>${state.trips.map(t=>`<option value="${t.id}">${escapeHtml(t.emoji?t.emoji+' ':'')}${escapeHtml(t.name)}</option>`).join('')}</select></div>` : '';
+  openSheet(`
+    <h2>Nouvelle tâche</h2>
+    <div class="field"><label>Titre</label><input id="tkTitle" placeholder="Ex. Appeler le proprio" autofocus></div>
+    <div class="field"><label>Échéance (optionnel)</label><input id="tkDue" type="date"></div>
+    <div class="field"><label>Priorité</label>
+      <div class="seg" id="tkPriority">
+        <button class="on" data-v="normale" onclick="segPick(this)">Normale</button>
+        <button data-v="haute" onclick="segPick(this)">Haute</button>
+      </div>
+    </div>
+    ${tripOpts}
+    <div class="sheet-actions">
+      <button class="btn ghost" onclick="closeSheet()">Annuler</button>
+      <button class="btn primary" onclick="submitTask()">Ajouter</button>
+    </div>`);
+}
+function segPick(btn){
+  [...btn.parentElement.children].forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function submitTask(){
+  const title = document.getElementById('tkTitle').value.trim();
+  if(!title) return;
+  const due = document.getElementById('tkDue').value;
+  const priority = document.querySelector('#tkPriority .on').dataset.v;
+  const tripEl = document.getElementById('tkTrip');
+  state.tasks.unshift({id:uid(), title, due, priority, done:false, tripId: tripEl ? tripEl.value : ''});
+  save('tasks'); render(); closeSheet();
+}
+function toggleTask(id){ const t=state.tasks.find(x=>x.id===id); t.done=!t.done; save('tasks'); render(); }
+function deleteTask(id){ state.tasks = state.tasks.filter(x=>x.id!==id); save('tasks'); render(); }
+
+/* ---- RAPPELS ---- */
+function renderReminders(){
+  const list = [...state.reminders].sort((a,b)=>(a.done-b.done)||(a.date||'9999').localeCompare(b.date||'9999'));
+  document.getElementById('remindersList').innerHTML = list.length ? list.map(r=>`
+    <div class="row">
+      <div class="chk ${r.done?'on':''}" onclick="toggleReminder('${r.id}')">${checkSvg}</div>
+      <div class="grip"><p class="t ${r.done?'done':''}">${escapeHtml(r.title)}</p><p class="m">${r.date?fmtDate(r.date)+(r.time?' · '+r.time:''):''}${r.note?' · '+escapeHtml(r.note):''}</p></div>
+      <div class="del-x" onclick="deleteReminder('${r.id}')">${trashSvg}</div>
+    </div>`).join('') : emptyState('Aucun rappel', 'Appuie sur + pour en créer un.');
+}
+function openReminderSheet(){
+  openSheet(`
+    <h2>Nouveau rappel</h2>
+    <div class="field"><label>Titre</label><input id="rmTitle" placeholder="Ex. Renouveler le passeport" autofocus></div>
+    <div class="field"><label>Date</label><input id="rmDate" type="date"></div>
+    <div class="field"><label>Heure (optionnel)</label><input id="rmTime" type="time"></div>
+    <div class="field"><label>Note (optionnel)</label><input id="rmNote" placeholder="Détail court"></div>
+    <div class="sheet-actions">
+      <button class="btn ghost" onclick="closeSheet()">Annuler</button>
+      <button class="btn primary" onclick="submitReminder()">Ajouter</button>
+    </div>`);
+}
+function submitReminder(){
+  const title = document.getElementById('rmTitle').value.trim();
+  if(!title) return;
+  state.reminders.unshift({id:uid(), title, date:document.getElementById('rmDate').value, time:document.getElementById('rmTime').value, note:document.getElementById('rmNote').value.trim(), done:false});
+  save('reminders'); render(); closeSheet();
+}
+function toggleReminder(id){ const r=state.reminders.find(x=>x.id===id); r.done=!r.done; save('reminders'); render(); }
+function deleteReminder(id){ state.reminders = state.reminders.filter(x=>x.id!==id); save('reminders'); render(); }
+
+/* ---- ARGENT À ENVOYER ---- */
+function renderMoney(){
+  const pending = state.money.filter(m=>m.status==='pending').sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999'));
+  const sent = state.money.filter(m=>m.status==='sent');
+  const total = pending.reduce((s,m)=>s+Number(m.amount||0),0);
+  document.getElementById('moneyTotal').textContent = fmtMoney(total);
+  document.getElementById('moneyPending').innerHTML = pending.length ? pending.map(m=>`
+    <div class="row">
+      <div class="chk" onclick="toggleMoney('${m.id}')">${checkSvg}</div>
+      <div class="grip"><p class="t">${escapeHtml(m.person)}</p><p class="m">${escapeHtml(m.desc||'')}${m.due?' · '+daysDiffLabel(m.due):''}</p></div>
+      <div class="amt neg">${fmtMoney(m.amount)}</div>
+      <div class="del-x" onclick="deleteMoney('${m.id}')">${trashSvg}</div>
+    </div>`).join('') : emptyState('Rien à envoyer', 'Appuie sur + pour ajouter un envoi.');
+  document.getElementById('moneySent').innerHTML = sent.length ? sent.map(m=>`
+    <div class="row">
+      <div class="chk on" onclick="toggleMoney('${m.id}')">${checkSvg}</div>
+      <div class="grip"><p class="t done">${escapeHtml(m.person)}</p><p class="m">${escapeHtml(m.desc||'')}</p></div>
+      <div class="amt">${fmtMoney(m.amount)}</div>
+      <div class="del-x" onclick="deleteMoney('${m.id}')">${trashSvg}</div>
+    </div>`).join('') : emptyState('Aucun envoi effectué', 'Ils apparaîtront ici.');
+}
+function openMoneySheet(){
+  openSheet(`
+    <h2>Argent à envoyer</h2>
+    <div class="field"><label>À qui</label><input id="mnPerson" placeholder="Ex. Colocataire, Maman..." autofocus></div>
+    <div class="field"><label>Montant</label><input id="mnAmount" type="number" step="0.01" placeholder="0.00"></div>
+    <div class="field"><label>Raison (optionnel)</label><input id="mnDesc" placeholder="Ex. Loyer, cadeau..."></div>
+    <div class="field"><label>Échéance (optionnel)</label><input id="mnDue" type="date"></div>
+    <div class="sheet-actions">
+      <button class="btn ghost" onclick="closeSheet()">Annuler</button>
+      <button class="btn primary" onclick="submitMoney()">Ajouter</button>
+    </div>`);
+}
+function submitMoney(){
+  const person = document.getElementById('mnPerson').value.trim();
+  const amount = parseFloat(document.getElementById('mnAmount').value);
+  if(!person || isNaN(amount)) return;
+  state.money.unshift({id:uid(), person, amount, desc:document.getElementById('mnDesc').value.trim(), due:document.getElementById('mnDue').value, status:'pending'});
+  save('money'); render(); closeSheet();
+}
+function toggleMoney(id){ const m=state.money.find(x=>x.id===id); m.status = m.status==='pending'?'sent':'pending'; save('money'); render(); }
+function deleteMoney(id){ state.money = state.money.filter(x=>x.id!==id); save('money'); render(); }
+
+/* ---- BUDGET ---- */
+const todayForBudget = new Date();
+let budgetView = { year: todayForBudget.getFullYear(), month: todayForBudget.getMonth() };
+
+function budgetShiftMonth(delta){
+  budgetView.month += delta;
+  if(budgetView.month < 0){ budgetView.month = 11; budgetView.year--; }
+  if(budgetView.month > 11){ budgetView.month = 0; budgetView.year++; }
+  renderBudget();
+}
+function budgetGoToday(){
+  const t = new Date();
+  budgetView.year = t.getFullYear(); budgetView.month = t.getMonth();
+  renderBudget();
+}
+function budgetMonthKey(view){ return view.year + '-' + pad2(view.month+1); }
+function isCurrentRealMonth(view){
+  const t = new Date();
+  return view.year === t.getFullYear() && view.month === t.getMonth();
+}
+function txForMonth(monthKey){
+  return state.budget.transactions.filter(t => (t.date||'').slice(0,7) === monthKey);
+}
+function catSpentForMonth(catId, monthKey){
+  return state.budget.transactions
+    .filter(t => t.catId===catId && t.type==='expense' && (t.date||'').slice(0,7)===monthKey)
+    .reduce((s,t)=>s+Number(t.amount||0),0);
+}
+function renderBudget(){
+  const monthKey = budgetMonthKey(budgetView);
+  const label = new Date(budgetView.year, budgetView.month, 1).toLocaleDateString('fr-CA', {month:'long', year:'numeric'});
+  document.getElementById('budgetMonthLabel').textContent = label;
+  document.getElementById('budgetTxLabel').textContent = 'Transactions · ' + label;
+
+  const monthTx = txForMonth(monthKey);
+  const income = monthTx.filter(t=>t.type==='income').reduce((s,t)=>s+Number(t.amount||0),0);
+  const expenses = monthTx.filter(t=>t.type==='expense').reduce((s,t)=>s+Number(t.amount||0),0);
+  const bilan = income - expenses;
+  const target = state.budget.incomeTarget || 0;
+
+  document.getElementById('budgetSummary').innerHTML = `
+    <div class="bsum tap" onclick="openIncomeTargetSheet()">
+      <div class="lbl">Revenus</div>
+      <div class="val" style="color:var(--mint);">${fmtMoney(income)}</div>
+      <div class="sub">objectif ${fmtMoney(target)}</div>
+    </div>
+    <div class="bsum">
+      <div class="lbl">Dépenses</div>
+      <div class="val" style="color:var(--coral);">${fmtMoney(expenses)}</div>
+      <div class="sub">&nbsp;</div>
+    </div>
+    <div class="bsum">
+      <div class="lbl">Bilan</div>
+      <div class="val" style="color:${bilan>=0?'var(--mint)':'var(--coral)'};">${bilan>=0?'+':''}${fmtMoney(bilan)}</div>
+      <div class="sub">&nbsp;</div>
+    </div>`;
+
+  const cats = state.budget.categories;
+  document.getElementById('budgetCategories').innerHTML = cats.length ? cats.map(c=>{
+    const spent = catSpentForMonth(c.id, monthKey);
+    if(c.limit>0){
+      const p = Math.min(100, Math.round(spent/c.limit*100));
+      return `<div class="budget-item">
+        <div class="bi-top" style="cursor:pointer;" onclick="editBudgetCategoryLimit('${c.id}')"><span class="bi-name">${escapeHtml(c.name)}</span><span class="bi-nums">${fmtMoney(spent)} / ${fmtMoney(c.limit)}</span></div>
+        <div class="bar-track" style="cursor:pointer;" onclick="editBudgetCategoryLimit('${c.id}')"><div class="bar-fill ${p>=100?'over':''}" style="width:${p}%"></div></div>
+        <div style="text-align:right; margin-top:6px;"><span class="del-x" style="display:inline-flex;" onclick="deleteBudgetCategory('${c.id}')">${trashSvg}</span></div>
+      </div>`;
+    }
+    return `<div class="row">
+      <div class="grip" onclick="editBudgetCategoryLimit('${c.id}')" style="cursor:pointer;"><p class="t">${escapeHtml(c.name)}</p></div>
+      <div class="amt neg">${spent>0?fmtMoney(spent):'—'}</div>
+      <div class="del-x" onclick="deleteBudgetCategory('${c.id}')">${trashSvg}</div>
+    </div>`;
+  }).join('') : emptyState('Pas encore de catégorie', 'Crée une catégorie pour suivre tes dépenses.');
+
+  const tx = [...monthTx].sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('budgetTransactions').innerHTML = tx.length ? tx.map(t=>{
+    const cat = state.budget.categories.find(c=>c.id===t.catId);
+    return `<div class="row">
+      <div class="grip"><p class="t">${escapeHtml(t.label || (cat?cat.name:(t.type==='income'?'Revenu':'Sans catégorie')))}</p><p class="m">${fmtDate(t.date)}${cat&&t.type==='expense'?' · '+escapeHtml(cat.name):''}</p></div>
+      <div class="amt ${t.type==='income'?'pos':'neg'}">${t.type==='income'?'+':'-'}${fmtMoney(t.amount)}</div>
+      <div class="del-x" onclick="deleteTransaction('${t.id}')">${trashSvg}</div>
+    </div>`;
+  }).join('') : emptyState('Aucune transaction ce mois-ci', 'Ajoute une dépense ou un revenu avec +.');
+}
+function openIncomeTargetSheet(){
+  openSheet(`
+    <h2>Objectif de revenu mensuel</h2>
+    <div class="field"><label>Montant</label><input id="incTarget" type="number" step="0.01" value="${state.budget.incomeTarget||0}" autofocus></div>
+    <div class="sheet-actions">
+      <button class="btn ghost" onclick="closeSheet()">Annuler</button>
+      <button class="btn primary" onclick="submitIncomeTarget()">Enregistrer</button>
+    </div>`);
+}
+function submitIncomeTarget(){
+  const v = parseFloat(document.getElementById('incTarget').value);
+  if(isNaN(v)) return;
+  state.budget.incomeTarget = v;
+  save('budget'); render(); closeSheet();
+}
+function openBudgetCategorySheet(){
+  openSheet(`
+    <h2>Nouvelle catégorie</h2>
+    <div class="field"><label>Nom</label><input id="bcName" placeholder="Ex. Épicerie" autofocus></div>
+    <div class="field"><label>Objectif mensuel (optionnel)</label><input id="bcLimit" type="number" step="0.01" placeholder="Laisse vide pour aucun objectif"></div>
+    <div class="sheet-actions">
+      <button class="btn ghost" onclick="closeSheet()">Annuler</button>
+      <button class="btn primary" onclick="submitBudgetCategory()">Créer</button>
+    </div>`);
+}
+function submitBudgetCategory(){
+  const name = document.getElementById('bcName').value.trim();
+  if(!name) return;
+  const limit = parseFloat(document.getElementById('bcLimit').value) || 0;
+  state.budget.categories.push({id:uid(), name, limit});
+  save('budget'); render(); closeSheet();
+}
+function editBudgetCategoryLimit(id){
+  const c = state.budget.categories.find(x=>x.id===id);
+  if(!c) return;
+  openSheet(`
+    <h2>${escapeHtml(c.name)}</h2>
+    <div class="field"><label>Objectif mensuel (0 = aucun)</label><input id="bcLimitEdit" type="number" step="0.01" value="${c.limit||0}" autofocus></div>
+    <div class="sheet-actions">
+      <button class="btn ghost" onclick="closeSheet()">Annuler</button>
+      <button class="btn primary" onclick="submitBudgetCategoryLimit('${id}')">Enregistrer</button>
+    </div>`);
+}
+function submitBudgetCategoryLimit(id){
+  const c = state.budget.categories.find(x=>x.id===id);
+  if(!c) return;
+  const v = parseFloat(document.getElementById('bcLimitEdit').value);
+  c.limit = isNaN(v) ? 0 : v;
+  save('budget'); render(); closeSheet();
+}
+function deleteBudgetCategory(id){
+  state.budget.categories = state.budget.categories.filter(x=>x.id!==id);
+  state.budget.transactions.forEach(t=>{ if(t.catId===id) t.catId=''; });
+  save('budget'); render();
+}
+function toggleTxCatField(type){
+  document.getElementById('txCatField').classList.toggle('hidden', type==='income');
+}
+function openTransactionSheet(){
+  const opts = state.budget.categories.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+  const defaultDate = isCurrentRealMonth(budgetView) ? todayISO() : (budgetView.year+'-'+pad2(budgetView.month+1)+'-01');
+  openSheet(`
+    <h2>Nouvelle transaction</h2>
+    <div class="field"><label>Type</label>
+      <div class="seg" id="txType">
+        <button class="on" data-v="expense" onclick="segPick(this); toggleTxCatField(this.dataset.v)">Dépense</button>
+        <button data-v="income" onclick="segPick(this); toggleTxCatField(this.dataset.v)">Revenu</button>
+      </div>
+    </div>
+    <div class="field"><label>Description</label><input id="txLabel" placeholder="Ex. Épicerie IGA"></div>
+    <div class="field"><label>Montant</label><input id="txAmount" type="number" step="0.01" placeholder="0.00"></div>
+    <div class="field" id="txCatField">
+      <label>Catégorie</label>
+      <select id="txCat">${opts ? '<option value="" disabled selected>Choisir une catégorie…</option>' + opts : '<option value="">Crée une catégorie d\'abord</option>'}</select>
+      <p id="txCatError" class="hidden" style="color:var(--coral); font-size:12px; margin:6px 0 0;">Choisis une catégorie pour cette dépense.</p>
+    </div>
+    <div class="field"><label>Date</label><input id="txDate" type="date" value="${defaultDate}"></div>
+    ${state.trips.length ? `<div class="field"><label>Voyage (optionnel)</label><select id="txTrip"><option value="">Aucun</option>${state.trips.map(t=>`<option value="${t.id}">${escapeHtml(t.emoji?t.emoji+' ':'')}${escapeHtml(t.name)}</option>`).join('')}</select></div>` : ''}
+    <div class="sheet-actions">
+      <button class="btn ghost" onclick="closeSheet()">Annuler</button>
+      <button class="btn primary" onclick="submitTransaction()">Ajouter</button>
+    </div>`);
+}
+function submitTransaction(){
+  const amount = parseFloat(document.getElementById('txAmount').value);
+  if(isNaN(amount)) return;
+  const type = document.querySelector('#txType .on').dataset.v;
+  const catId = document.getElementById('txCat').value;
+  if(type==='expense' && !catId){
+    document.getElementById('txCatError').classList.remove('hidden');
+    return;
+  }
+  const date = document.getElementById('txDate').value || todayISO();
+  const tripEl = document.getElementById('txTrip');
+  state.budget.transactions.unshift({
+    id:uid(), type, amount,
+    label:document.getElementById('txLabel').value.trim(),
+    catId: type==='income' ? '' : catId,
+    date: date,
+    tripId: tripEl ? tripEl.value : ''
+  });
+  const parts = date.split('-').map(Number);
+  budgetView = { year: parts[0], month: parts[1]-1 };
+  save('budget'); render(); closeSheet();
+}
+function deleteTransaction(id){ state.budget.transactions = state.budget.transactions.filter(x=>x.id!==id); save('budget'); render(); }
+
+/* ---- ÉPICERIE ---- */
+function findOrCreateGroceryCategory(){
+  let cat = state.budget.categories.find(c=>c.name.toLowerCase().includes('épicerie') || c.name.toLowerCase().includes('epicerie'));
+  if(!cat){
+    cat = {id:uid(), name:'Épicerie', limit:0};
+    state.budget.categories.push(cat);
+  }
+  return cat;
+}
+function renderGroceries(){
+  const cat = state.budget.categories.find(c=>c.name.toLowerCase().includes('épicerie') || c.name.toLowerCase().includes('epicerie'));
+  const realMonthKey = new Date().getFullYear()+'-'+pad2(new Date().getMonth()+1);
+  if(cat){
+    const spent = catSpentForMonth(cat.id, realMonthKey);
+    document.getElementById('groceryBudgetLine').textContent = cat.limit>0
+      ? fmtMoney(spent)+' / '+fmtMoney(cat.limit)
+      : fmtMoney(spent)+' ce mois-ci';
+  } else {
+    document.getElementById('groceryBudgetLine').textContent = '0,00 $ ce mois-ci';
+  }
+
+  const items = [...state.groceries].sort((a,b)=>(a.checked-b.checked));
+  document.getElementById('groceryList').innerHTML = items.length ? items.map(it=>`
+    <div class="grocery-row">
+      <div class="chk ${it.checked?'on':''}" onclick="toggleGroceryItem('${it.id}')">${checkSvg}</div>
+      <div class="grip"><p class="t ${it.checked?'done':''}">${escapeHtml(it.name)}${it.qty?' · '+escapeHtml(it.qty):''}</p><p class="m">${it.price?fmtMoney(it.price):''}${it.store?' · '+escapeHtml(it.store):''}</p></div>
+      <div class="del-x" onclick="deleteGroceryItem('${it.id}')">${trashSvg}</div>
+    </div>`).join('') : emptyState('Liste vide', "Appuie sur + pour ajouter un article.");
+}
+function openGroceryItemSheet(){
+  openSheet(`
+    <h2>Nouvel article</h2>
+    <div class="field"><label>Article</label><input id="grName" placeholder="Ex. Lait" autofocus></div>
+    <div class="field"><label>Quantité (optionnel)</label><input id="grQty" placeholder="Ex. 2L, x3..."></div>
+    <div class="field"><label>Prix estimé (optionnel)</label><input id="grPrice" type="number" step="0.01" placeholder="0.00"></div>
+    <div class="field"><label>Magasin (optionnel)</label><input id="grStore" placeholder="Ex. IGA, Costco..."></div>
+    <div class="sheet-actions">
+      <button class="btn ghost" onclick="closeSheet()">Annuler</button>
+      <button class="btn primary" onclick="submitGroceryItem()">Ajouter</button>
+    </div>`);
+}
+function submitGroceryItem(){
+  const name = document.getElementById('grName').value.trim();
+  if(!name) return;
+  state.groceries.push({
+    id:uid(), name,
+    qty:document.getElementById('grQty').value.trim(),
+    price:parseFloat(document.getElementById('grPrice').value) || 0,
+    store:document.getElementById('grStore').value.trim(),
+    checked:false
+  });
+  save('groceries'); render(); closeSheet();
+}
+function toggleGroceryItem(id){ const it=state.groceries.find(x=>x.id===id); it.checked=!it.checked; save('groceries'); render(); }
+function deleteGroceryItem(id){ state.groceries = state.groceries.filter(x=>x.id!==id); save('groceries'); render(); }
+function finishGroceryRun(){
+  const checked = state.groceries.filter(it=>it.checked && it.price>0);
+  if(!checked.length) return;
+  const total = checked.reduce((s,it)=>s+Number(it.price||0),0);
+  const cat = findOrCreateGroceryCategory();
+  state.budget.transactions.unshift({
+    id:uid(), type:'expense', amount: total,
+    label:'Épicerie ('+checked.length+' article'+(checked.length>1?'s':'')+')',
+    catId: cat.id, date: todayISO()
+  });
+  state.groceries = state.groceries.filter(it=>!it.checked);
+  save('budget'); save('groceries'); render();
+}
+
+/* ---- CALENDRIER ---- */
+const todayD = new Date();
+let calView = { year: todayD.getFullYear(), month: todayD.getMonth() };
+let calSelected = todayISO();
+
+function calShiftMonth(delta){
+  calView.month += delta;
+  if(calView.month < 0){ calView.month = 11; calView.year--; }
+  if(calView.month > 11){ calView.month = 0; calView.year++; }
+  renderCalendar();
+}
+function calGoToday(){
+  const t = new Date();
+  calView.year = t.getFullYear(); calView.month = t.getMonth();
+  calSelected = todayISO();
+  renderCalendar();
+}
+function selectDay(iso){
+  calSelected = iso;
+  renderCalendar();
+}
+function isoOf(y,m,d){ return y+'-'+pad2(m+1)+'-'+pad2(d); }
+
+function renderCalendar(){
+  const year = calView.year, month = calView.month;
+  const label = new Date(year, month, 1).toLocaleDateString('fr-CA', {month:'long', year:'numeric'});
+  document.getElementById('calMonthLabel').textContent = label;
+
+  const firstOfMonth = new Date(year, month, 1);
+  let startOffset = firstOfMonth.getDay() - 1;
+  if(startOffset < 0) startOffset = 6;
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+  const eventsByDate = {};
+  state.events.forEach(function(e){
+    if(!eventsByDate[e.date]) eventsByDate[e.date] = [];
+    eventsByDate[e.date].push(e);
+  });
+
+  const today = todayISO();
+  const cells = [];
+  for(let i=startOffset-1; i>=0; i--){
+    const d = daysInPrevMonth - i;
+    const pm = month===0 ? 11 : month-1;
+    const py = month===0 ? year-1 : year;
+    cells.push({d:d, iso: isoOf(py,pm,d), other:true});
+  }
+  for(let d=1; d<=daysInMonth; d++){
+    cells.push({d:d, iso: isoOf(year,month,d), other:false});
+  }
+  const nm = month===11 ? 0 : month+1;
+  const ny = month===11 ? year+1 : year;
+  let nd = 1;
+  while(cells.length % 7 !== 0 || cells.length < 35){
+    cells.push({d:nd, iso: isoOf(ny,nm,nd), other:true});
+    nd++;
+    if(cells.length >= 42) break;
+  }
+
+  document.getElementById('calGrid').innerHTML = cells.map(function(c){
+    const evs = eventsByDate[c.iso] || [];
+    const classes = ['cal-day'];
+    if(c.other) classes.push('other-month');
+    if(c.iso === today) classes.push('today');
+    if(c.iso === calSelected) classes.push('selected');
+    const dots = evs.slice(0,3).map(function(){ return '<span></span>'; }).join('');
+    return '<div class="'+classes.join(' ')+'" onclick="selectDay(\''+c.iso+'\')"><span>'+c.d+'</span><div class="dots">'+dots+'</div></div>';
+  }).join('');
+
+  const selDate = new Date(calSelected + 'T00:00:00');
+  const isToday = calSelected === today;
+  document.getElementById('calSelectedLabel').textContent = isToday
+    ? "Aujourd'hui"
+    : selDate.toLocaleDateString('fr-CA', {weekday:'long', day:'numeric', month:'long'});
+
+  const dayEvents = (eventsByDate[calSelected] || []).slice().sort(function(a,b){ return (a.time||'').localeCompare(b.time||''); });
+  document.getElementById('calDayEvents').innerHTML = dayEvents.length ? dayEvents.map(function(e){
+    return '<div class="row"><div class="grip"><p class="t">'+escapeHtml(e.title)+'</p><p class="m">'+(e.time?e.time:'Toute la journée')+(e.place?' &middot; '+escapeHtml(e.place):'')+'</p></div><div class="del-x" onclick="deleteEvent(\''+e.id+'\')">'+trashSvg+'</div></div>';
+  }).join('') : emptyState('Rien de prévu ce jour-là', 'Appuie sur + pour ajouter un évènement.');
+}
+function renderEvents(){ renderCalendar(); }
+
+function openEventSheet(){
+  const tripOpts = state.trips.length ? `<div class="field"><label>Voyage (optionnel)</label><select id="evTrip"><option value="">Aucun</option>${state.trips.map(t=>`<option value="${t.id}">${escapeHtml(t.emoji?t.emoji+' ':'')}${escapeHtml(t.name)}</option>`).join('')}</select></div>` : '';
+  openSheet(`
+    <h2>Nouvel évènement</h2>
+    <div class="field"><label>Titre</label><input id="evTitle" placeholder="Ex. Souper de famille" autofocus></div>
+    <div class="field"><label>Date</label><input id="evDate" type="date" value="${calSelected}"></div>
+    <div class="field"><label>Heure (optionnel)</label><input id="evTime" type="time"></div>
+    <div class="field"><label>Lieu (optionnel)</label><input id="evPlace" placeholder="Ex. Chez mes parents"></div>
+    ${tripOpts}
+    <div class="sheet-actions">
+      <button class="btn ghost" onclick="closeSheet()">Annuler</button>
+      <button class="btn primary" onclick="submitEvent()">Ajouter</button>
+    </div>`);
+}
+function submitEvent(){
+  const title = document.getElementById('evTitle').value.trim();
+  const date = document.getElementById('evDate').value;
+  if(!title || !date) return;
+  const tripEl = document.getElementById('evTrip');
+  state.events.push({id:uid(), title:title, date:date, time:document.getElementById('evTime').value, place:document.getElementById('evPlace').value.trim(), tripId: tripEl ? tripEl.value : ''});
+  const parts = date.split('-').map(Number);
+  calView = { year: parts[0], month: parts[1]-1 };
+  calSelected = date;
+  save('events'); render(); closeSheet();
+}
+function deleteEvent(id){ state.events = state.events.filter(function(x){ return x.id!==id; }); save('events'); render(); }
+
+/* ---- INVESTISSEMENTS ---- */
+const INVEST_ACCOUNTS = ['CELI','CELIAPP','REER','Non-enregistré','Autre'];
+const INVEST_ASSET_CLASSES = ['Actions','Obligations','Liquidités','Autres'];
+function investTotals(){
+  const totalInvested = state.investments.reduce((s,i)=>s+Number(i.invested||0),0);
+  const totalValue = state.investments.reduce((s,i)=>s+Number(i.current||0),0);
+  return {totalInvested, totalValue};
+}
+function renderInvestments(){
+  const {totalInvested, totalValue} = investTotals();
+  const gain = totalValue-totalInvested;
+  const gainPct = totalInvested ? (gain/totalInvested*100) : 0;
+  document.getElementById('investTotal').textContent = fmtMoney(totalValue);
+  const gainEl = document.getElementById('investGain');
+  gainEl.textContent = `${gain>=0?'+':''}${fmtMoney(gain)} (${gainPct>=0?'+':''}${gainPct.toFixed(1)}%)`;
+  gainEl.style.color = gain>=0 ? 'var(--mint)' : 'var(--coral)';
+
+  // par compte
+  const byAccount = {};
+  state.investments.forEach(i=>{
+    const acc = i.account || 'Autre';
+    byAccount[acc] = (byAccount[acc]||0) + Number(i.current||0);
+  });
+  const accEntries = Object.entries(byAccount).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('investByAccount').innerHTML = accEntries.length ? accEntries.map(([acc,val])=>`
+    <div class="row">
+      <div class="grip"><p class="t">${escapeHtml(acc)}</p></div>
+      <div class="amt pos">${fmtMoney(val)}</div>
+    </div>`).join('') : emptyState('Aucune position', 'Ajoute un placement avec +.');
+
+  // allocation par classe d'actif
+  const byClass = {};
+  state.investments.forEach(i=>{
+    const cls = i.assetClass || 'Autres';
+    byClass[cls] = (byClass[cls]||0) + Number(i.current||0);
+  });
+  const classEntries = Object.entries(byClass).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('investAllocation').innerHTML = classEntries.length ? classEntries.map(([cls,val])=>{
+    const p = totalValue ? Math.round(val/totalValue*100) : 0;
+    return `<div class="alloc-row">
+      <div class="alloc-top"><span class="nm">${escapeHtml(cls)}</span><span class="pc">${p}% · ${fmtMoney(val)}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${p}%"></div></div>
+    </div>`;
+  }).join('') : emptyState('Aucune donnée', 'Ajoute un placement pour voir ta répartition.');
+
+  // positions
+  document.getElementById('investList').innerHTML = state.investments.length ? state.investments.map(i=>{
+    const g = Number(i.current||0)-Number(i.invested||0);
+    const gp = i.invested ? (g/i.invested*100) : 0;
+    const pOfPortfolio = totalValue ? Math.round(Number(i.current||0)/totalValue*100) : 0;
+    return `<div class="row">
+      <div class="grip"><p class="t">${escapeHtml(i.name)}</p><p class="m">${escapeHtml(i.account||'')} · ${pOfPortfolio}% du portefeuille</p></div>
+      <div class="grip" style="flex:0 0 auto; text-align:right;">
+        <p class="t" style="font-family:var(--font-mono);">${fmtMoney(i.current)}</p>
+        <p class="m" style="color:${g>=0?'var(--mint)':'var(--coral)'};">${g>=0?'+':''}${gp.toFixed(1)}%</p>
+      </div>
+      <div class="del-x" onclick="deleteInvest('${i.id}')">${trashSvg}</div>
+    </div>`;
+  }).join('') : emptyState('Aucune position', 'Ajoute un placement avec +.');
+}
+function openInvestSheet(){
+  const accOpts = INVEST_ACCOUNTS.map(a=>`<option value="${a}">${a}</option>`).join('');
+  const classOpts = INVEST_ASSET_CLASSES.map(a=>`<option value="${a}">${a}</option>`).join('');
+  openSheet(`
+    <h2>Nouveau placement</h2>
+    <div class="field"><label>Nom</label><input id="ivName" placeholder="Ex. VEQT, VFV, Bitcoin..." autofocus></div>
+    <div class="field"><label>Compte</label><select id="ivAccount">${accOpts}</select></div>
+    <div class="field"><label>Type d'actif</label><select id="ivClass">${classOpts}</select></div>
+    <div class="field"><label>Montant investi</label><input id="ivInvested" type="number" step="0.01" placeholder="0.00"></div>
+    <div class="field"><label>Valeur actuelle</label><input id="ivCurrent" type="number" step="0.01" placeholder="0.00"></div>
+    <div class="sheet-actions">
+      <button class="btn ghost" onclick="closeSheet()">Annuler</button>
+      <button class="btn primary" onclick="submitInvest()">Ajouter</button>
+    </div>`);
+}
+function submitInvest(){
+  const name = document.getElementById('ivName').value.trim();
+  const invested = parseFloat(document.getElementById('ivInvested').value);
+  const current = parseFloat(document.getElementById('ivCurrent').value);
+  if(!name || isNaN(invested) || isNaN(current)) return;
+  state.investments.unshift({
+    id:uid(), name,
+    account:document.getElementById('ivAccount').value,
+    assetClass:document.getElementById('ivClass').value,
+    invested, current
+  });
+  save('investments'); render(); closeSheet();
+}
+function deleteInvest(id){ state.investments = state.investments.filter(x=>x.id!==id); save('investments'); render(); }
+
+/* ---- VOYAGES ---- */
+function tripSpent(tripId){
+  return state.budget.transactions.filter(t=>t.tripId===tripId && t.type==='expense').reduce((s,t)=>s+Number(t.amount||0),0);
+}
+function renderTrips(){
+  const wrap = document.getElementById('tripsWrap');
+  const trips = [...state.trips].sort((a,b)=>a.startDate.localeCompare(b.startDate));
+  wrap.innerHTML = trips.length ? trips.map(t=>{
+    const spent = tripSpent(t.id);
+    const nbTasks = state.tasks.filter(x=>x.tripId===t.id && !x.done).length;
+    return `<div class="trip-card" onclick="openTripDetail('${t.id}')">
+      <div class="trip-top">
+        <div>
+          <div class="trip-name">${t.emoji?escapeHtml(t.emoji)+' ':''}${escapeHtml(t.name)}</div>
+          <div class="trip-dates">${fmtDate(t.startDate)} → ${fmtDate(t.endDate)}</div>
+        </div>
+        <span class="trip-countdown">${daysDiffLabel(t.startDate)}</span>
+      </div>
+      ${t.budgetTarget>0 ? `<div class="bar-track"><div class="bar-fill ${spent>t.budgetTarget?'over':''}" style="width:${Math.min(100,Math.round(spent/t.budgetTarget*100))}%"></div></div>
+      <p class="m" style="margin-top:6px;">${fmtMoney(spent)} / ${fmtMoney(t.budgetTarget)}${nbTasks?' · '+nbTasks+' tâche'+(nbTasks>1?'s':'')+' à faire':''}</p>` :
+      `<p class="m">${nbTasks?nbTasks+' tâche'+(nbTasks>1?'s':'')+' à faire':'Aucune tâche liée'}</p>`}
+    </div>`;
+  }).join('') : emptyState('Aucun voyage', "Appuie sur + pour planifier un voyage.");
+}
+function openTripSheet(){
+  openSheet(`
+    <h2>Nouveau voyage</h2>
+    <div class="field"><label>Nom</label><input id="tpName" placeholder="Ex. Brésil" autofocus></div>
+    <div class="field"><label>Emoji (optionnel)</label><input id="tpEmoji" placeholder="🇧🇷" maxlength="4"></div>
+    <div class="field"><label>Date de départ</label><input id="tpStart" type="date" value="${todayISO()}"></div>
+    <div class="field"><label>Date de retour</label><input id="tpEnd" type="date"></div>
+    <div class="field"><label>Budget cible (optionnel)</label><input id="tpBudget" type="number" step="0.01" placeholder="0.00"></div>
+    <div class="field"><label>Notes (optionnel)</label><textarea id="tpNotes" placeholder="Idées, liens, notes..."></textarea></div>
+    <div class="sheet-actions">
+      <button class="btn ghost" onclick="closeSheet()">Annuler</button>
+      <button class="btn primary" onclick="submitTrip()">Créer</button>
+    </div>`);
+}
+function submitTrip(){
+  const name = document.getElementById('tpName').value.trim();
+  const startDate = document.getElementById('tpStart').value;
+  const endDate = document.getElementById('tpEnd').value || startDate;
+  if(!name || !startDate) return;
+  state.trips.push({
+    id:uid(), name, emoji:document.getElementById('tpEmoji').value.trim(),
+    startDate, endDate,
+    budgetTarget: parseFloat(document.getElementById('tpBudget').value) || 0,
+    notes: document.getElementById('tpNotes').value.trim(),
+    stops: []
+  });
+  save('trips'); render(); closeSheet();
+}
+function openTripDetail(id){
+  const t = state.trips.find(x=>x.id===id);
+  if(!t) return;
+  const spent = tripSpent(t.id);
+  const stops = (t.stops||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  const tasks = state.tasks.filter(x=>x.tripId===id);
+  const events = state.events.filter(x=>x.tripId===id).sort((a,b)=>a.date.localeCompare(b.date));
+  openSheet(`
+    <h2>${t.emoji?escapeHtml(t.emoji)+' ':''}${escapeHtml(t.name)}</h2>
+    <p class="m" style="margin:-10px 0 14px; color:var(--text-dim);">${fmtDate(t.startDate)} → ${fmtDate(t.endDate)}</p>
+    ${t.budgetTarget>0 ? `<div class="field"><label>Budget voyage</label>
+      <div class="bar-track"><div class="bar-fill ${spent>t.budgetTarget?'over':''}" style="width:${Math.min(100,Math.round(spent/t.budgetTarget*100))}%"></div></div>
+      <p class="m" style="margin-top:6px;">${fmtMoney(spent)} / ${fmtMoney(t.budgetTarget)} dépensé</p>
+    </div>` : `<p class="m">Dépenses liées : ${fmtMoney(spent)}</p>`}
+    ${t.notes ? `<div class="field"><label>Notes</label><p class="m" style="white-space:pre-wrap;">${escapeHtml(t.notes)}</p></div>` : ''}
+
+    <div class="field"><label>Étapes / hébergements / réservations</label>
+      <div id="tripStopsList" style="margin-bottom:8px;">
+        ${stops.length ? stops.map(s=>`
+          <div class="row" style="padding:8px 2px;">
+            <div class="grip"><p class="t">${escapeHtml(s.name)}</p><p class="m">${s.type?escapeHtml(s.type)+' · ':''}${s.date?fmtDate(s.date):''}${s.notes?' · '+escapeHtml(s.notes):''}</p></div>
+            <div class="del-x" onclick="deleteTripStop('${t.id}','${s.id}')">${trashSvg}</div>
+          </div>`).join('') : '<p class="m">Aucune étape ajoutée.</p>'}
+      </div>
+      <div class="seg" style="margin-bottom:8px;">
+        <input id="tsName" placeholder="Ex. Rio de Janeiro" style="flex:2; background:var(--surface); border:1px solid var(--stroke-2); color:var(--text); border-radius:9px; padding:9px 10px; font-size:13px;">
+      </div>
+      <div class="seg" style="margin-bottom:8px;">
+        <input id="tsDate" type="date" style="flex:1; background:var(--surface); border:1px solid var(--stroke-2); color:var(--text); border-radius:9px; padding:9px 10px; font-size:13px;">
+        <select id="tsType" style="flex:1; background:var(--surface); border:1px solid var(--stroke-2); color:var(--text); border-radius:9px; padding:9px 10px; font-size:13px;">
+          <option value="Étape">Étape</option>
+          <option value="Hébergement">Hébergement</option>
+          <option value="Réservation">Réservation</option>
+        </select>
+      </div>
+      <button class="btn ghost" style="width:100%;" onclick="addTripStop('${t.id}')">+ Ajouter une étape</button>
+    </div>
+
+    <div class="field"><label>Tâches liées (${tasks.filter(x=>!x.done).length} à faire)</label>
+      ${tasks.length ? tasks.map(x=>`<p class="m">${x.done?'✓ ':'☐ '}${escapeHtml(x.title)}</p>`).join('') : '<p class="m">Aucune tâche liée. Associe une tâche à ce voyage depuis l\u2019onglet Tâches.</p>'}
+    </div>
+    <div class="field"><label>Évènements liés</label>
+      ${events.length ? events.map(x=>`<p class="m">${fmtDate(x.date)} · ${escapeHtml(x.title)}</p>`).join('') : '<p class="m">Aucun évènement lié. Associe un évènement à ce voyage depuis l\u2019onglet Calendrier.</p>'}
+    </div>
+
+    <div class="sheet-actions">
+      <button class="btn ghost" onclick="deleteTrip('${t.id}')" style="color:var(--coral);">Supprimer le voyage</button>
+      <button class="btn primary" onclick="closeSheet()">Fermer</button>
+    </div>`);
+}
+function addTripStop(tripId){
+  const t = state.trips.find(x=>x.id===tripId);
+  if(!t) return;
+  const name = document.getElementById('tsName').value.trim();
+  if(!name) return;
+  if(!t.stops) t.stops = [];
+  t.stops.push({id:uid(), name, date:document.getElementById('tsDate').value, type:document.getElementById('tsType').value, notes:''});
+  save('trips'); render(); openTripDetail(tripId);
+}
+function deleteTripStop(tripId, stopId){
+  const t = state.trips.find(x=>x.id===tripId);
+  if(!t) return;
+  t.stops = (t.stops||[]).filter(s=>s.id!==stopId);
+  save('trips'); render(); openTripDetail(tripId);
+}
+function deleteTrip(id){
+  state.trips = state.trips.filter(x=>x.id!==id);
+  state.tasks.forEach(x=>{ if(x.tripId===id) x.tripId=''; });
+  state.events.forEach(x=>{ if(x.tripId===id) x.tripId=''; });
+  save('trips'); save('tasks'); save('events'); render(); closeSheet();
+}
+
+/* ---- WIDGETS PERSONNALISÉS (Dashboard) ---- */
+function openWidgetSheet(){
+  openSheet(`
+    <h2>Nouveau widget</h2>
+    <div class="field"><label>Titre</label><input id="wgTitle" placeholder="Ex. Idées cadeaux" autofocus></div>
+    <div class="field"><label>Contenu</label><textarea id="wgBody" placeholder="Note libre, lien, suivi personnel..."></textarea></div>
+    <div class="sheet-actions">
+      <button class="btn ghost" onclick="closeSheet()">Annuler</button>
+      <button class="btn primary" onclick="submitWidget()">Ajouter</button>
+    </div>`);
+}
+function submitWidget(){
+  const title = document.getElementById('wgTitle').value.trim();
+  if(!title) return;
+  state.widgets.unshift({id:uid(), title, body:document.getElementById('wgBody').value.trim()});
+  save('widgets'); render(); closeSheet();
+}
+function deleteWidget(id){ state.widgets = state.widgets.filter(x=>x.id!==id); save('widgets'); render(); }
+
+/* ============ INIT ============ */
+switchTab('dashboard');
+loadAll();
+setInterval(updateClock, 60000);
+</script>
+</body>
+</html>
